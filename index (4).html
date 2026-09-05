@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fichas de pacientes para consultorios de dermatología y estética</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#20261f;
+    --paper:#faf9f4;
+    --sage:#3f5b41;
+    --sage-soft:#e3ebe0;
+    --clay:#d98f74;
+    --grey:#8a897f;
+    --grey-line:#dedad0;
+    --max:920px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--sage); outline-offset:3px;}
+
+  .wrap{
+    max-width:var(--max);
+    margin:0 auto;
+    padding:0 24px;
+  }
+
+  /* HERO */
+  .hero{
+    padding:88px 0 72px;
+    border-bottom:1px solid var(--grey-line);
+  }
+  .hero-kicker{
+    font-size:0.95rem;
+    color:var(--sage);
+    font-weight:600;
+    margin:0 0 18px;
+  }
+  .hero h1{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(2.1rem, 4.2vw, 3.1rem);
+    line-height:1.18;
+    letter-spacing:-0.01em;
+    margin:0 0 22px;
+    max-width:15ch;
+  }
+  .hero p{
+    font-size:1.15rem;
+    color:#454a41;
+    max-width:52ch;
+    margin:0;
+  }
+
+  /* PARA QUIEN SI / NO */
+  .fit{
+    padding:64px 0 80px;
+  }
+  .fit-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+    border:1px solid var(--grey-line);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .fit-col{
+    padding:36px 32px;
+  }
+  .fit-col.yes{
+    background:var(--sage-soft);
+    border-right:1px solid var(--grey-line);
+  }
+  .fit-col.no{
+    background:transparent;
+  }
+  .fit-col h2{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:1.35rem;
+    margin:0 0 20px;
+  }
+  .fit-col.yes h2{color:var(--sage);} 
+  .fit-col.no h2{color:var(--grey);} 
+
+  .fit-col ul{
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+  .fit-col li{
+    display:flex;
+    gap:12px;
+    padding:10px 0;
+    font-size:1rem;
+  }
+  .fit-col li + li{
+    border-top:1px solid rgba(0,0,0,0.06);
+  }
+  .fit-col.yes li::before{
+    content:"✓";
+    color:var(--sage);
+    font-weight:600;
+    flex-shrink:0;
+  }
+  .fit-col.no li::before{
+    content:"×";
+    color:var(--grey);
+    font-weight:600;
+    flex-shrink:0;
+  }
+  .fit-col.no li{
+    color:#5a5a52;
+  }
+
+  @media (max-width: 640px){
+    .fit-grid{grid-template-columns:1fr;}
+    .fit-col.yes{border-right:none; border-bottom:1px solid var(--grey-line);} 
+    .hero{padding:64px 0 48px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="hero-kicker">Cinthia Calle — IA para consultorios de piel y estética</p>
+    <h1>Una ficha por paciente, lista para usar entre turno y turno.</h1>
+    <p>Trabajo con dermatólogas, cosmiatras y centros de estética facial y corporal para que dejen de anotar el historial en WhatsApp, una planilla o de memoria. En 7 a 10 días tenés la ficha armada y funcionando en tu consultorio.</p>
+  </div>
+</header>
+
+<section class="fit">
+  <div class="wrap">
+    <div class="fit-grid">
+      <div class="fit-col yes">
+        <h2>Es para vos si</h2>
+        <ul>
+          <li>Sos dermatóloga, cosmiatra o dueña de un centro de estética facial o corporal.</li>
+          <li>Hoy anotás tratamientos en WhatsApp, una planilla o en la cabeza.</li>
+          <li>Querés algo que se abra rápido desde el celular, entre paciente y paciente.</li>
+        </ul>
+      </div>
+      <div class="fit-col no">
+        <h2>No es para vos si</h2>
+        <ul>
+          <li>Buscás reemplazar la historia clínica legal de tu matrícula.</li>
+          <li>Necesitás cargar todos tus pacientes de una sola vez.</li>
+          <li>No hacés tratamientos de piel, faciales o corporales.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
