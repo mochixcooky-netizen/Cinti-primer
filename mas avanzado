@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo: Ficha de cliente — Dermatología y Cosmiatría</title>
+<style>
+  :root{
+    --cream: #FBF7F1;
+    --surface: #FFFFFF;
+    --line: #E7DDCF;
+    --ink: #2B2620;
+    --muted: #8A8175;
+    --sage: #74886A;
+    --sage-dark: #55684D;
+    --clay: #C4826E;
+    --clay-soft: #F1DCD2;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap{
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+  }
+
+  h1, h2, .serif{
+    font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+  }
+
+  header{
+    text-align: left;
+    margin-bottom: 40px;
+  }
+
+  header p.kicker{
+    margin: 0 0 10px;
+    color: var(--sage-dark);
+    font-size: 0.95rem;
+  }
+
+  h1{
+    font-size: clamp(1.7rem, 4vw, 2.35rem);
+    margin: 0 0 6px;
+    line-height: 1.2;
+    max-width: 20ch;
+  }
+
+  .beat{
+    border-left: 3px solid var(--sage);
+    padding: 14px 20px;
+    margin: 28px 0;
+    background: var(--surface);
+    border-radius: 2px;
+  }
+
+  .beat.after{
+    border-left-color: var(--clay);
+  }
+
+  .beat p{
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .beat p strong{
+    color: var(--sage-dark);
+  }
+
+  .beat.after p strong{
+    color: var(--clay);
+  }
+
+  section.demo{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 28px;
+    margin: 32px 0;
+  }
+
+  section.demo h2{
+    font-size: 1.15rem;
+    margin: 0 0 4px;
+  }
+
+  section.demo .sub{
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin: 0 0 22px;
+  }
+
+  .search-row{
+    position: relative;
+    margin-bottom: 18px;
+  }
+
+  input#search{
+    width: 100%;
+    padding: 13px 16px;
+    font-size: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: inherit;
+  }
+
+  input#search:focus{
+    outline: none;
+    border-color: var(--sage);
+    box-shadow: 0 0 0 3px rgba(116,136,106,0.15);
+  }
+
+  .suggestions{
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chip{
+    border: 1px solid var(--line);
+    background: var(--cream);
+    color: var(--ink);
+    padding: 6px 13px;
+    border-radius: 20px;
+    font-size: 0.86rem;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .chip:hover{
+    border-color: var(--sage);
+    color: var(--sage-dark);
+  }
+
+  .chip:focus-visible, .cta:focus-visible, input#search:focus-visible{
+    outline: 2px solid var(--sage-dark);
+    outline-offset: 2px;
+  }
+
+  #result{
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    margin-top: 6px;
+  }
+
+  .empty-state{
+    color: var(--muted);
+    font-size: 0.95rem;
+    padding: 6px 0 2px;
+  }
+
+  .card-anim{
+    animation: rise 0.35s ease;
+  }
+
+  @keyframes rise{
+    from{ opacity: 0; transform: translateY(6px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  .client-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .client-head .name{
+    font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    font-size: 1.3rem;
+  }
+
+  .client-head .since{
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .next-appt{
+    background: var(--clay-soft);
+    border-radius: 5px;
+    padding: 12px 16px;
+    margin: 14px 0 20px;
+    font-size: 0.95rem;
+  }
+
+  .next-appt .label{
+    display: block;
+    color: var(--clay);
+    font-weight: 600;
+    margin-bottom: 2px;
+    font-size: 0.82rem;
+  }
+
+  h3.history-title{
+    font-size: 0.85rem;
+    text-transform: none;
+    color: var(--muted);
+    margin: 0 0 10px;
+    font-weight: 600;
+    font-family: inherit;
+  }
+
+  ul.history{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  ul.history li{
+    display: flex;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.95rem;
+  }
+
+  ul.history li:last-child{
+    border-bottom: none;
+  }
+
+  ul.history .date{
+    color: var(--muted);
+    min-width: 78px;
+    flex-shrink: 0;
+    font-size: 0.88rem;
+  }
+
+  .note{
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+
+  .cta-block{
+    text-align: center;
+    margin-top: 52px;
+    padding-top: 8px;
+  }
+
+  .cta{
+    display: inline-block;
+    background: var(--sage-dark);
+    color: #fff;
+    text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 6px;
+    font-size: 1.02rem;
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+  }
+
+  .cta:hover{
+    background: var(--sage);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card-anim{ animation: none; }
+    html{ scroll-behavior: auto; }
+  }
+
+  @media (max-width: 480px){
+    .wrap{ padding: 36px 18px 60px; }
+    .client-head{ flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <p class="kicker">Demo — Consultorio de dermatología y cosmiatría</p>
+    <h1>Ficha de cliente en segundos</h1>
+  </header>
+
+  <div class="beat">
+    <p><strong>Antes:</strong> para saber qué tratamientos se hizo cada paciente, la recepcionista revisaba fichas de papel o planillas sueltas y perdía varios minutos por consulta.</p>
+  </div>
+
+  <section class="demo">
+    <h2>Probá la búsqueda</h2>
+    <p class="sub">Escribí un nombre o tocá una sugerencia.</p>
+
+    <div class="search-row">
+      <input type="text" id="search" placeholder="Buscar paciente por nombre…" autocomplete="off">
+      <div class="suggestions" id="suggestions"></div>
+    </div>
+
+    <div id="result">
+      <p class="empty-state">Escribí un nombre arriba para ver su ficha.</p>
+    </div>
+  </section>
+
+  <div class="beat after">
+    <p><strong>Después:</strong> buscás el nombre y en dos segundos tenés el historial completo y el próximo turno, listos para atender.</p>
+  </div>
+
+  <div class="cta-block">
+    <!-- Reemplazá el href de abajo por tu enlace real de agenda (Calendly, WhatsApp, etc.) -->
+    <a class="cta" href="#" onclick="return false;">¿Lo ves claro? Agendá 20 minutos y te armo la versión para tu negocio</a>
+  </div>
+
+</div>
+
+<script>
+  var clientes = [
+    {
+      nombre: "María Elena Fassi",
+      desde: "paciente desde 2021",
+      proximoTurno: "Martes 9 de septiembre, 15:30 — Sesión de radiofrecuencia facial",
+      historial: [
+        { fecha: "18 ago 2026", detalle: "Limpieza facial profunda + hidratación" },
+        { fecha: "20 jun 2026", detalle: "Peeling químico suave, zona T" },
+        { fecha: "02 abr 2026", detalle: "Consulta inicial y diagnóstico de piel" }
+      ],
+      nota: "Piel sensible: evitar ácidos fuertes en verano."
+    },
+    {
+      nombre: "Rocío Andrada",
+      desde: "paciente desde 2023",
+      proximoTurno: "Jueves 11 de septiembre, 10:00 — Control post depilación láser",
+      historial: [
+        { fecha: "25 ago 2026", detalle: "Depilación láser, piernas completas — sesión 5 de 8" },
+        { fecha: "28 jul 2026", detalle: "Depilación láser, piernas completas — sesión 4 de 8" },
+        { fecha: "30 jun 2026", detalle: "Depilación láser, piernas completas — sesión 3 de 8" }
+      ],
+      nota: ""
+    },
+    {
+      nombre: "Sofía Benegas",
+      desde: "paciente desde 2022",
+      proximoTurno: "Miércoles 10 de septiembre, 17:00 — Aplicación de ácido hialurónico, labios",
+      historial: [
+        { fecha: "12 ago 2026", detalle: "Botox entrecejo" },
+        { fecha: "03 may 2026", detalle: "Ácido hialurónico, ojeras" },
+        { fecha: "14 feb 2026", detalle: "Microdermoabrasión" }
+      ],
+      nota: "Prefiere turnos después de las 16 h."
+    },
+    {
+      nombre: "Gustavo Perren",
+      desde: "paciente desde 2024",
+      proximoTurno: "Sin turno agendado",
+      historial: [
+        { fecha: "05 ago 2026", detalle: "Sesión de dermapen, cicatrices de acné" },
+        { fecha: "10 jun 2026", detalle: "Consulta inicial y diagnóstico de piel" }
+      ],
+      nota: ""
+    },
+    {
+      nombre: "Antonella Rearte",
+      desde: "paciente desde 2020",
+      proximoTurno: "Viernes 12 de septiembre, 11:15 — Peeling químico profundo",
+      historial: [
+        { fecha: "22 jul 2026", detalle: "Peeling químico profundo" },
+        { fecha: "15 abr 2026", detalle: "Radiofrecuencia facial" },
+        { fecha: "20 ene 2026", detalle: "Limpieza facial profunda" }
+      ],
+      nota: "Alérgica al ácido salicílico."
+    }
+  ];
+
+  var input = document.getElementById("search");
+  var suggestionsEl = document.getElementById("suggestions");
+  var resultEl = document.getElementById("result");
+
+  function renderSuggestions(){
+    suggestionsEl.innerHTML = "";
+    clientes.forEach(function(c){
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip";
+      chip.textContent = c.nombre;
+      chip.addEventListener("click", function(){
+        input.value = c.nombre;
+        renderResult(c.nombre);
+      });
+      suggestionsEl.appendChild(chip);
+    });
+  }
+
+  function renderResult(query){
+    var q = query.trim().toLowerCase();
+
+    if(q === ""){
+      resultEl.innerHTML = '<p class="empty-state">Escribí un nombre arriba para ver su ficha.</p>';
+      return;
+    }
+
+    var encontrado = clientes.find(function(c){
+      return c.nombre.toLowerCase().indexOf(q) !== -1;
+    });
+
+    if(!encontrado){
+      resultEl.innerHTML = '<p class="empty-state">No hay ninguna paciente con ese nombre en esta demo. Probá con una de las sugerencias.</p>';
+      return;
+    }
+
+    var historialHTML = encontrado.historial.map(function(h){
+      return '<li><span class="date">' + h.fecha + '</span><span>' + h.detalle + '</span></li>';
+    }).join("");
+
+    var notaHTML = encontrado.nota ? '<p class="note">Nota: ' + encontrado.nota + '</p>' : '';
+
+    resultEl.innerHTML =
+      '<div class="card-anim">' +
+        '<div class="client-head">' +
+          '<span class="name">' + encontrado.nombre + '</span>' +
+          '<span class="since">' + encontrado.desde + '</span>' +
+        '</div>' +
+        '<div class="next-appt">' +
+          '<span class="label">Próximo turno</span>' +
+          encontrado.proximoTurno +
+        '</div>' +
+        '<h3 class="history-title">Historial de tratamientos</h3>' +
+        '<ul class="history">' + historialHTML + '</ul>' +
+        notaHTML +
+      '</div>';
+  }
+
+  input.addEventListener("input", function(){
+    renderResult(input.value);
+  });
+
+  renderSuggestions();
+</script>
+
+</body>
+</html>
