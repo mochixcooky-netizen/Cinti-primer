@@ -1,449 +1,1143 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Demo: Ficha de cliente — Dermatología y Cosmiatría</title>
-<style>
-  :root{
-    --cream: #FBF7F1;
-    --surface: #FFFFFF;
-    --line: #E7DDCF;
-    --ink: #2B2620;
-    --muted: #8A8175;
-    --sage: #74886A;
-    --sage-dark: #55684D;
-    --clay: #C4826E;
-    --clay-soft: #F1DCD2;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cinthia Calle</title>
+  <meta name="description" content="Fichas digitales para centros de estética. Cada clienta en su lugar, todo desde el celular." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-  *{ box-sizing: border-box; }
+  <style>
+    /* ============================================================
+       TOKENS — paleta, tipografía, espacio
+       ============================================================ */
+    :root {
+      /* Colores — modo claro */
+      --bg:        #EDEAE4;   /* crema lino, como una ficha de papel */
+      --surface:   #F6F3EF;   /* superficie de cards/paneles */
+      --surface-2: #FFFFFF;   /* superficie más limpia */
+      --ink:       #1B2730;   /* pizarra oscuro, sesgo azul */
+      --muted:     #6C7B88;   /* texto secundario, gris acero */
+      --border:    rgba(27, 39, 48, .11);
+      --accent:    #3B6E60;   /* verde-teal oscuro — orden, calma, salud */
+      --accent-lt: #4D8A7A;   /* hover del acento */
+      --cta:       #C24F38;   /* rojo ladrillo — solo para el CTA */
+      --cta-h:     #A83F2B;   /* hover del CTA */
+      --shadow:    0 2px 20px rgba(27, 39, 48, .07);
 
-  html{ scroll-behavior: smooth; }
+      /* Tipografía */
+      --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+      --body:    'Outfit', system-ui, -apple-system, sans-serif;
 
-  body{
-    margin: 0;
-    background: var(--cream);
-    color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
+      /* Escala de tipo */
+      --t-2xs: .7rem;
+      --t-xs:  .8rem;
+      --t-sm:  .9rem;
+      --t-md:  1.125rem;
+      --t-lg:  1.4rem;
+      --t-xl:  1.85rem;
+      --t-2xl: 2.4rem;
+      --t-3xl: 3.2rem;
 
-  .wrap{
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 56px 24px 80px;
-  }
+      /* Espaciado vertical */
+      --sec: clamp(3.5rem, 8vw, 6rem);
+    }
 
-  h1, h2, .serif{
-    font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-    font-weight: 600;
-    letter-spacing: 0.1px;
-  }
+    /* Modo oscuro — sistema */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg:        #131D25;
+        --surface:   #1C2B36;
+        --surface-2: #243342;
+        --ink:       #E8E2D8;
+        --muted:     #8A9EAD;
+        --border:    rgba(232, 226, 216, .10);
+        --accent:    #5DAE9A;
+        --accent-lt: #72C4AE;
+        --shadow:    0 2px 24px rgba(0, 0, 0, .35);
+      }
+    }
 
-  header{
-    text-align: left;
-    margin-bottom: 40px;
-  }
+    /* Modo oscuro — explícito */
+    :root[data-theme="dark"] {
+      --bg:        #131D25;
+      --surface:   #1C2B36;
+      --surface-2: #243342;
+      --ink:       #E8E2D8;
+      --muted:     #8A9EAD;
+      --border:    rgba(232, 226, 216, .10);
+      --accent:    #5DAE9A;
+      --accent-lt: #72C4AE;
+      --shadow:    0 2px 24px rgba(0, 0, 0, .35);
+    }
 
-  header p.kicker{
-    margin: 0 0 10px;
-    color: var(--sage-dark);
-    font-size: 0.95rem;
-  }
+    /* ============================================================
+       RESET Y BASE
+       ============================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  h1{
-    font-size: clamp(1.7rem, 4vw, 2.35rem);
-    margin: 0 0 6px;
-    line-height: 1.2;
-    max-width: 20ch;
-  }
+    html { scroll-behavior: smooth; }
 
-  .beat{
-    border-left: 3px solid var(--sage);
-    padding: 14px 20px;
-    margin: 28px 0;
-    background: var(--surface);
-    border-radius: 2px;
-  }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--body);
+      font-size: 1rem;
+      line-height: 1.65;
+      padding-inline: clamp(1rem, 5vw, 2rem);
+      -webkit-font-smoothing: antialiased;
+    }
 
-  .beat.after{
-    border-left-color: var(--clay);
-  }
+    img { max-width: 100%; display: block; }
 
-  .beat p{
-    margin: 0;
-    font-size: 1.05rem;
-  }
+    a { color: inherit; }
 
-  .beat p strong{
-    color: var(--sage-dark);
-  }
+    /* ============================================================
+       TIPOGRAFÍA UTILITARIA
+       ============================================================ */
 
-  .beat.after p strong{
-    color: var(--clay);
-  }
+    /* Eyebrow — etiqueta de sección */
+    .eyebrow {
+      display: block;
+      font-family: var(--body);
+      font-size: var(--t-2xs);
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .6rem;
+    }
 
-  section.demo{
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 28px;
-    margin: 32px 0;
-  }
+    h1, h2, h3 {
+      font-family: var(--display);
+      text-wrap: balance;
+      line-height: 1.13;
+      letter-spacing: -.02em;
+    }
 
-  section.demo h2{
-    font-size: 1.15rem;
-    margin: 0 0 4px;
-  }
+    h1 {
+      font-size: clamp(var(--t-2xl), 6.5vw, var(--t-3xl));
+      font-weight: 800;
+    }
 
-  section.demo .sub{
-    color: var(--muted);
-    font-size: 0.92rem;
-    margin: 0 0 22px;
-  }
+    h2 {
+      font-size: clamp(var(--t-xl), 4.5vw, var(--t-2xl));
+      font-weight: 600;
+    }
 
-  .search-row{
-    position: relative;
-    margin-bottom: 18px;
-  }
+    h3 {
+      font-family: var(--body);
+      font-size: var(--t-md);
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
 
-  input#search{
-    width: 100%;
-    padding: 13px 16px;
-    font-size: 1rem;
-    border: 1px solid var(--line);
-    border-radius: 5px;
-    background: var(--cream);
-    color: var(--ink);
-    font-family: inherit;
-  }
+    .lead {
+      font-size: var(--t-md);
+      color: var(--ink);
+      max-width: 54ch;
+      line-height: 1.6;
+    }
 
-  input#search:focus{
-    outline: none;
-    border-color: var(--sage);
-    box-shadow: 0 0 0 3px rgba(116,136,106,0.15);
-  }
+    p { max-width: 60ch; color: var(--muted); }
 
-  .suggestions{
-    margin-top: 8px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+    /* ============================================================
+       LAYOUT — contenedor y secciones
+       ============================================================ */
+    .wrap {
+      max-width: 900px;
+      margin-inline: auto;
+    }
 
-  .chip{
-    border: 1px solid var(--line);
-    background: var(--cream);
-    color: var(--ink);
-    padding: 6px 13px;
-    border-radius: 20px;
-    font-size: 0.86rem;
-    cursor: pointer;
-    font-family: inherit;
-  }
+    .sec {
+      padding-block: var(--sec);
+    }
 
-  .chip:hover{
-    border-color: var(--sage);
-    color: var(--sage-dark);
-  }
+    /* Separador entre secciones */
+    .sec + .sec {
+      border-top: 1px solid var(--border);
+    }
 
-  .chip:focus-visible, .cta:focus-visible, input#search:focus-visible{
-    outline: 2px solid var(--sage-dark);
-    outline-offset: 2px;
-  }
+    /* Separador de stack vertical dentro de sección */
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap, 1.25rem);
+    }
 
-  #result{
-    border-top: 1px solid var(--line);
-    padding-top: 20px;
-    margin-top: 6px;
-  }
+    /* ============================================================
+       HEADER
+       ============================================================ */
+    .site-header {
+      border-bottom: 1px solid var(--border);
+      padding-block: 1rem;
+    }
 
-  .empty-state{
-    color: var(--muted);
-    font-size: 0.95rem;
-    padding: 6px 0 2px;
-  }
+    .site-header .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
 
-  .card-anim{
-    animation: rise 0.35s ease;
-  }
+    .logo {
+      font-family: var(--display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -.01em;
+    }
 
-  @keyframes rise{
-    from{ opacity: 0; transform: translateY(6px); }
-    to{ opacity: 1; transform: translateY(0); }
-  }
+    .nav-cta {
+      font-size: var(--t-sm);
+      font-weight: 500;
+      color: var(--accent);
+      text-decoration: none;
+      padding: .4rem .9rem;
+      border: 1.5px solid var(--accent);
+      border-radius: 6px;
+      transition: background .18s, color .18s;
+      white-space: nowrap;
+    }
 
-  .client-head{
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 4px;
-  }
+    .nav-cta:hover {
+      background: var(--accent);
+      color: #fff;
+    }
 
-  .client-head .name{
-    font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-    font-size: 1.3rem;
-  }
+    .nav-cta:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
 
-  .client-head .since{
-    color: var(--muted);
-    font-size: 0.85rem;
-  }
+    /* ============================================================
+       BOTONES
+       ============================================================ */
+    .btn {
+      display: inline-block;
+      font-family: var(--body);
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background .18s, transform .14s;
+      cursor: pointer;
+      border: none;
+    }
 
-  .next-appt{
-    background: var(--clay-soft);
-    border-radius: 5px;
-    padding: 12px 16px;
-    margin: 14px 0 20px;
-    font-size: 0.95rem;
-  }
+    .btn:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
 
-  .next-appt .label{
-    display: block;
-    color: var(--clay);
-    font-weight: 600;
-    margin-bottom: 2px;
-    font-size: 0.82rem;
-  }
+    /* Botón primario — rojo ladrillo, un solo uso en la página */
+    .btn-primary {
+      background: var(--cta);
+      color: #fff;
+      padding: .9rem 2rem;
+      font-size: 1rem;
+    }
 
-  h3.history-title{
-    font-size: 0.85rem;
-    text-transform: none;
-    color: var(--muted);
-    margin: 0 0 10px;
-    font-weight: 600;
-    font-family: inherit;
-  }
+    .btn-primary:hover {
+      background: var(--cta-h);
+      transform: translateY(-1px);
+    }
 
-  ul.history{
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
+    /* ============================================================
+       SECCIÓN 1 — HERO
+       ============================================================ */
+    .hero {
+      padding-top: clamp(3rem, 9vw, 5.5rem);
+      padding-bottom: clamp(2.5rem, 7vw, 4.5rem);
+    }
 
-  ul.history li{
-    display: flex;
-    gap: 14px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--line);
-    font-size: 0.95rem;
-  }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
 
-  ul.history li:last-child{
-    border-bottom: none;
-  }
+    .hero .lead {
+      margin-top: .2rem;
+    }
 
-  ul.history .date{
-    color: var(--muted);
-    min-width: 78px;
-    flex-shrink: 0;
-    font-size: 0.88rem;
-  }
+    .hero p.sub {
+      font-size: var(--t-md);
+      color: var(--muted);
+      max-width: 50ch;
+    }
 
-  .note{
-    color: var(--muted);
-    font-size: 0.85rem;
-    margin-top: 4px;
-  }
+    .hero-cta {
+      margin-top: .5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
 
-  .cta-block{
-    text-align: center;
-    margin-top: 52px;
-    padding-top: 8px;
-  }
+    /* ============================================================
+       SECCIÓN 2 — PARA QUIÉN
+       ============================================================ */
+    .para-quien-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
 
-  .cta{
-    display: inline-block;
-    background: var(--sage-dark);
-    color: #fff;
-    text-decoration: none;
-    padding: 15px 30px;
-    border-radius: 6px;
-    font-size: 1.02rem;
-    font-family: inherit;
-    border: none;
-    cursor: pointer;
-  }
+    .pq-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+    }
 
-  .cta:hover{
-    background: var(--sage);
-  }
+    .pq-card.no {
+      background: transparent;
+      border-style: dashed;
+      opacity: .75;
+    }
 
-  @media (prefers-reduced-motion: reduce){
-    .card-anim{ animation: none; }
-    html{ scroll-behavior: auto; }
-  }
+    .pq-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: .85rem;
+      margin-bottom: .8rem;
+    }
 
-  @media (max-width: 480px){
-    .wrap{ padding: 36px 18px 60px; }
-    .client-head{ flex-direction: column; align-items: flex-start; }
-  }
-</style>
+    .pq-card:not(.no) .pq-mark {
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      color: var(--accent);
+    }
+
+    .pq-card.no .pq-mark {
+      background: color-mix(in srgb, var(--muted) 15%, transparent);
+      color: var(--muted);
+    }
+
+    .pq-card h3 {
+      margin-bottom: .4rem;
+    }
+
+    .pq-card p {
+      font-size: var(--t-sm);
+      max-width: none;
+    }
+
+    /* ============================================================
+       SECCIÓN 3 — DEMO ANTES / DESPUÉS
+       ============================================================ */
+    .demo-wrap {
+      margin-top: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 2.5rem 1fr;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .demo-panel {
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      min-height: 230px;
+    }
+
+    .demo-label {
+      font-size: var(--t-2xs);
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: .75rem;
+    }
+
+    .demo-label.antes-l { color: var(--muted); }
+    .demo-label.despues-l { color: var(--accent); }
+
+    /* Panel ANTES — caos visual */
+    .panel-antes {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    .postit {
+      background: #FFF8C0;
+      color: #3D3200;
+      font-size: var(--t-xs);
+      font-family: var(--body);
+      padding: .4rem .6rem;
+      border-radius: 3px;
+      box-shadow: 1px 2px 4px rgba(0,0,0,.12);
+      width: fit-content;
+      max-width: 95%;
+      line-height: 1.4;
+    }
+
+    .postit:nth-child(2) { transform: rotate(-1.3deg) translateX(4px); }
+    .postit:nth-child(3) { transform: rotate(.9deg); }
+    .postit:nth-child(4) { transform: rotate(-2.1deg) translateX(2px); }
+    .postit:nth-child(5) { transform: rotate(1.2deg) translateX(-3px); }
+
+    .antes-nota-texto {
+      margin-top: .75rem;
+      font-size: var(--t-2xs);
+      color: var(--muted);
+      font-style: italic;
+      border-left: 2px solid var(--border);
+      padding-left: .5rem;
+      line-height: 1.5;
+    }
+
+    /* La flecha central */
+    .demo-arrow {
+      text-align: center;
+      font-size: 1.25rem;
+      color: var(--accent);
+    }
+
+    /* Panel DESPUÉS — ficha digital */
+    .ficha {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      font-size: var(--t-xs);
+    }
+
+    .ficha-head {
+      background: var(--accent);
+      color: #fff;
+      padding: .55rem .85rem;
+      font-weight: 600;
+      font-size: var(--t-sm);
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    .ficha-head .avatar {
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .65rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .ficha-body {
+      background: var(--surface-2);
+      padding: .65rem .85rem;
+      display: grid;
+      gap: .4rem;
+    }
+
+    .ficha-row {
+      display: flex;
+      gap: .5rem;
+      line-height: 1.4;
+    }
+
+    .ficha-key {
+      color: var(--muted);
+      min-width: 70px;
+      font-size: var(--t-2xs);
+      font-weight: 500;
+      padding-top: .05em;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .ficha-val {
+      color: var(--ink);
+      font-size: var(--t-xs);
+    }
+
+    .ficha-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .2rem;
+      background: color-mix(in srgb, #E25C2C 12%, transparent);
+      color: #C04010;
+      font-size: var(--t-2xs);
+      font-weight: 600;
+      padding: .1rem .35rem;
+      border-radius: 4px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .postit {
+        background: #4A4020;
+        color: #F0E890;
+      }
+
+      :root:not([data-theme="light"]) .ficha-body {
+        background: var(--surface-2);
+      }
+
+      :root:not([data-theme="light"]) .ficha-badge {
+        background: color-mix(in srgb, #E25C2C 20%, transparent);
+        color: #F08060;
+      }
+    }
+
+    :root[data-theme="dark"] .postit {
+      background: #4A4020;
+      color: #F0E890;
+    }
+
+    :root[data-theme="dark"] .ficha-body {
+      background: var(--surface-2);
+    }
+
+    :root[data-theme="dark"] .ficha-badge {
+      background: color-mix(in srgb, #E25C2C 20%, transparent);
+      color: #F08060;
+    }
+
+    /* ============================================================
+       SECCIÓN 4 — CÓMO TRABAJO (4 pasos)
+       ============================================================ */
+    .pasos {
+      margin-top: 2rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem 1rem;
+      position: relative;
+    }
+
+    /* Línea que conecta los círculos */
+    .pasos::before {
+      content: '';
+      position: absolute;
+      top: 1.35rem; /* centrado con el círculo de 2.7rem */
+      left: calc(12.5% + .3rem);
+      right: calc(12.5% + .3rem);
+      height: 1px;
+      background: var(--border);
+      pointer-events: none;
+    }
+
+    .paso {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: .6rem;
+      position: relative;
+    }
+
+    .paso-num {
+      width: 2.7rem;
+      height: 2.7rem;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--display);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent);
+      position: relative;
+      z-index: 1; /* sobre la línea */
+      flex-shrink: 0;
+    }
+
+    .paso h3 {
+      font-size: var(--t-sm);
+      font-weight: 600;
+    }
+
+    .paso p {
+      font-size: var(--t-xs);
+      max-width: 20ch;
+      color: var(--muted);
+    }
+
+    .pasos-nota {
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: var(--t-sm);
+      color: var(--muted);
+    }
+
+    .pasos-nota strong {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* ============================================================
+       SECCIÓN 5 — PRESUPUESTO
+       ============================================================ */
+    .presupuesto-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      margin-top: 2rem;
+    }
+
+    .presupuesto-layout blockquote {
+      font-family: var(--display);
+      font-style: italic;
+      font-size: clamp(var(--t-lg), 3vw, var(--t-xl));
+      font-weight: 500;
+      color: var(--accent);
+      line-height: 1.35;
+      text-wrap: balance;
+      border-left: 3px solid var(--accent);
+      padding-left: 1.25rem;
+    }
+
+    /* ============================================================
+       SECCIÓN 6 — FAQ (acordeón nativo)
+       ============================================================ */
+    .faq-list {
+      margin-top: 2rem;
+      display: grid;
+      gap: .5rem;
+    }
+
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    /* Ocultar el triángulo nativo del <summary> */
+    .faq-q {
+      list-style: none;
+    }
+    .faq-q::-webkit-details-marker { display: none; }
+
+    .faq-q {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      font-size: var(--t-sm);
+      font-weight: 500;
+      color: var(--ink);
+      transition: background .15s;
+      user-select: none;
+    }
+
+    .faq-q:hover {
+      background: var(--bg);
+    }
+
+    .faq-q:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    .faq-icon {
+      font-size: .75rem;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: transform .22s;
+    }
+
+    details[open] .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-a {
+      padding: 0 1.25rem 1rem;
+      font-size: var(--t-sm);
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: none;
+    }
+
+    .faq-wsp {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .faq-wsp:hover { text-decoration: underline; }
+
+    /* ============================================================
+       SECCIÓN 7 — CTA FINAL
+       ============================================================ */
+    .cta-bloque {
+      background: var(--ink);
+      border-radius: 16px;
+      padding: clamp(2rem, 6vw, 3.5rem) clamp(1.5rem, 5vw, 3rem);
+      margin-block: var(--sec) 2rem;
+      display: grid;
+      gap: 1.1rem;
+    }
+
+    .cta-bloque h2 {
+      color: #EDE8E0;
+      font-size: clamp(var(--t-xl), 4.5vw, var(--t-2xl));
+    }
+
+    .cta-bloque p.sub-cta {
+      color: rgba(237, 232, 224, .60);
+      max-width: 50ch;
+    }
+
+    .cta-bloque .disclaimer {
+      font-size: var(--t-xs);
+      color: rgba(237, 232, 224, .40);
+      max-width: none;
+    }
+
+    .cta-bloque .disclaimer a {
+      color: rgba(237, 232, 224, .55);
+      text-decoration: underline;
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding-block: 1.5rem;
+      font-size: var(--t-xs);
+      color: var(--muted);
+    }
+
+    /* ============================================================
+       ANIMACIONES DE ENTRADA
+       ============================================================ */
+    @media (prefers-reduced-motion: no-preference) {
+      .fade-in {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity .5s ease, transform .5s ease;
+      }
+
+      .fade-in.visible {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* ============================================================
+       RESPONSIVE — tablet y móvil
+       ============================================================ */
+    @media (max-width: 680px) {
+      /* Para quién: columna única */
+      .para-quien-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* Demo: apilado verticalmente */
+      .demo-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .demo-arrow {
+        transform: rotate(90deg);
+        font-size: 1rem;
+        padding-block: .25rem;
+      }
+
+      /* Pasos: 2x2 */
+      .pasos {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .pasos::before { display: none; }
+
+      /* Presupuesto: apilado */
+      .presupuesto-layout {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      /* CTA header: solo logo */
+      .nav-cta { display: none; }
+    }
+
+    @media (max-width: 420px) {
+      /* Pasos: columna única en teléfonos muy chicos */
+      .pasos {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div class="wrap">
-
-  <header>
-    <p class="kicker">Demo — Consultorio de dermatología y cosmiatría</p>
-    <h1>Ficha de cliente en segundos</h1>
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="site-header">
+    <div class="wrap">
+      <a href="#" class="logo">Cinthia Calle</a>
+      <a href="#reunion" class="nav-cta">Agendá una reunión</a>
+    </div>
   </header>
 
-  <div class="beat">
-    <p><strong>Antes:</strong> para saber qué tratamientos se hizo cada paciente, la recepcionista revisaba fichas de papel o planillas sueltas y perdía varios minutos por consulta.</p>
-  </div>
 
-  <section class="demo">
-    <h2>Probá la búsqueda</h2>
-    <p class="sub">Escribí un nombre o tocá una sugerencia.</p>
+  <div class="wrap">
 
-    <div class="search-row">
-      <input type="text" id="search" placeholder="Buscar paciente por nombre…" autocomplete="off">
-      <div class="suggestions" id="suggestions"></div>
+    <!-- ==========================================================
+         SECCIÓN 1 — QUIÉN SOY Y QUÉ OFREZCO
+         ========================================================== -->
+    <section class="sec hero" aria-labelledby="hero-h1">
+      <div class="stack" style="--gap: 1.25rem;">
+        <span class="eyebrow">Fichas digitales para centros de estética</span>
+        <h1 id="hero-h1">
+          Organizá a tus clientas<br>
+          <em>sin libretas ni post-its</em>
+        </h1>
+        <p class="lead">
+          Soy Cinthia, armo fichas digitales para centros de estética.
+          Cada clienta en su lugar, todo desde el celular.
+        </p>
+        <p class="sub">
+          Nada de aplicaciones raras. Nada de cursos.
+          Lo dejás funcionando en una semana.
+        </p>
+        <div class="hero-cta">
+          <a href="#reunion" class="btn btn-primary">Agendá una reunión de 20 minutos</a>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==========================================================
+         SECCIÓN 2 — PARA QUIÉN SÍ / PARA QUIÉN NO
+         ========================================================== -->
+    <section class="sec fade-in" aria-labelledby="pq-h2">
+      <span class="eyebrow">Esto es para vos si…</span>
+      <h2 id="pq-h2">¿Tu negocio encaja?</h2>
+
+      <div class="para-quien-grid">
+        <!-- Sí -->
+        <div class="pq-card">
+          <div class="pq-mark">✓</div>
+          <h3>Sí, esto es para vos</h3>
+          <p>
+            Tenés clientas frecuentes y perdés tiempo buscando qué tratamiento
+            hicieron la última vez.
+          </p>
+        </div>
+        <!-- No -->
+        <div class="pq-card no">
+          <div class="pq-mark">✗</div>
+          <h3>Todavía no lo necesitás</h3>
+          <p>
+            No es para vos si recién arrancás o si atendés menos de 10 clientas
+            por mes — todavía no lo necesitás.
+          </p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==========================================================
+         SECCIÓN 3 — DEMO: ANTES Y DESPUÉS
+         ========================================================== -->
+    <section class="sec fade-in" aria-labelledby="demo-h2">
+      <span class="eyebrow">Así se ve el cambio</span>
+      <h2 id="demo-h2">Antes y después, en concreto</h2>
+      <p style="margin-top: .4rem;">
+        Abrís el celular, buscás el nombre y en 5 segundos sabés todo
+        lo que necesitás saber de esa clienta.
+      </p>
+
+      <div class="demo-wrap">
+
+        <!-- Panel ANTES -->
+        <div class="demo-panel">
+          <div class="demo-label antes-l">Antes</div>
+          <div class="panel-antes">
+            <div class="postit">María → HidraFacial ✓ (alergia nueces)</div>
+            <div class="postit">Laura — próx. turno lunes?? llamar</div>
+            <div class="postit">Rosa peeling 3 ses. → va por la 2</div>
+            <div class="postit">Carmen: crema que no le gustó!!!</div>
+            <p class="antes-nota-texto">
+              Libreta, papelitos, notas de WhatsApp…<br>
+              Información perdida entre conversaciones.
+            </p>
+          </div>
+        </div>
+
+        <!-- Flecha central -->
+        <div class="demo-arrow" aria-hidden="true">→</div>
+
+        <!-- Panel DESPUÉS — ficha digital simulada -->
+        <div class="demo-panel">
+          <div class="demo-label despues-l">Después</div>
+          <div class="ficha">
+            <div class="ficha-head">
+              <div class="avatar">MG</div>
+              María González
+            </div>
+            <div class="ficha-body">
+              <div class="ficha-row">
+                <span class="ficha-key">Último</span>
+                <span class="ficha-val">HidraFacial — 03/09/2026</span>
+              </div>
+              <div class="ficha-row">
+                <span class="ficha-key">Sesiones</span>
+                <span class="ficha-val">2 de 3 completadas</span>
+              </div>
+              <div class="ficha-row">
+                <span class="ficha-key">Alergias</span>
+                <span class="ficha-val">
+                  <span class="ficha-badge">⚠ Nueces</span>
+                </span>
+              </div>
+              <div class="ficha-row">
+                <span class="ficha-key">Próximo</span>
+                <span class="ficha-val">Lun 15/09, 10:00 h</span>
+              </div>
+              <div class="ficha-row">
+                <span class="ficha-key">Notas</span>
+                <span class="ficha-val">Prefiere música tranquila</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ==========================================================
+         SECCIÓN 4 — CÓMO TRABAJO, PASO A PASO
+         ========================================================== -->
+    <section class="sec fade-in" aria-labelledby="pasos-h2">
+      <span class="eyebrow">El proceso</span>
+      <h2 id="pasos-h2">Cuatro pasos y listo</h2>
+      <p style="margin-top:.4rem;">
+        Primero me contás cómo trabajás hoy. Después armamos la ficha a tu
+        medida, la probamos juntas y la dejamos funcionando.
+      </p>
+
+      <div class="pasos" role="list">
+        <div class="paso" role="listitem">
+          <div class="paso-num">1</div>
+          <h3>Me contás</h3>
+          <p>Cómo trabajás hoy y qué datos manejás de cada clienta.</p>
+        </div>
+        <div class="paso" role="listitem">
+          <div class="paso-num">2</div>
+          <h3>Armamos la ficha</h3>
+          <p>Diseño la ficha a medida de tu negocio.</p>
+        </div>
+        <div class="paso" role="listitem">
+          <div class="paso-num">3</div>
+          <h3>La probamos juntas</h3>
+          <p>Te muestro cómo funciona, ajustamos lo que haga falta.</p>
+        </div>
+        <div class="paso" role="listitem">
+          <div class="paso-num">4</div>
+          <h3>Ya funciona</h3>
+          <p>Empezás a usarlo con clientas reales desde el día uno.</p>
+        </div>
+      </div>
+
+      <p class="pasos-nota">
+        <strong>Una semana</strong> desde que empezamos hasta que ya lo estás usando.
+      </p>
+    </section>
+
+
+    <!-- ==========================================================
+         SECCIÓN 5 — CÓMO ARMO UN PRESUPUESTO
+         ========================================================== -->
+    <section class="sec fade-in" aria-labelledby="precio-h2">
+      <span class="eyebrow">La inversión</span>
+      <h2 id="precio-h2">El número se habla después de ver cómo funciona</h2>
+
+      <div class="presupuesto-layout">
+        <div class="stack" style="--gap: .9rem;">
+          <p class="lead">
+            Primero agendamos una reunión de 20 minutos: te muestro la demo,
+            entiendo tu negocio y ahí sí tiene sentido hablar de inversión.
+          </p>
+          <p>
+            No hay número en esta página porque lo que te cobro depende de
+            lo que realmente necesitás — y eso lo vemos juntas.
+          </p>
+        </div>
+        <blockquote>
+          "Primero veamos si le sirve a tu negocio. Después hablamos de plata."
+        </blockquote>
+      </div>
+    </section>
+
+
+    <!-- ==========================================================
+         SECCIÓN 6 — PREGUNTAS FRECUENTES
+         ========================================================== -->
+    <section class="sec fade-in" aria-labelledby="faq-h2">
+      <span class="eyebrow">Las dudas que siempre aparecen</span>
+      <h2 id="faq-h2">Preguntas frecuentes</h2>
+      <p style="margin-top:.4rem;">
+        Y si no encontrás lo que buscás,
+        <a class="faq-wsp" href="#">escribime por WhatsApp</a>
+        y te respondo el mismo día.
+      </p>
+
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            ¿Lo pueden usar mis empleadas?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </summary>
+          <p class="faq-a">
+            Sí. La ficha se puede compartir con tu equipo. Cada una accede desde
+            su propio celular, sin instalar nada ni crear cuentas complicadas.
+          </p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            ¿Se borra si cambio de celular?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </summary>
+          <p class="faq-a">
+            No. La información queda guardada en la nube. Cambiás de teléfono,
+            entrás de nuevo con tu usuario y todo sigue ahí, intacto.
+          </p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            ¿Reemplaza mi agenda de turnos?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </summary>
+          <p class="faq-a">
+            No reemplaza la agenda, la complementa. La agenda te dice
+            <em>cuándo</em> viene la clienta; la ficha te dice
+            <em>qué hacerle</em> cuando llegue.
+          </p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            ¿Necesito saber de tecnología?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </summary>
+          <p class="faq-a">
+            Para nada. Si sabés usar WhatsApp, podés usar esto.
+            No hay aplicaciones raras ni configuraciones difíciles.
+          </p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            ¿Qué pasa si necesito cambiar algo después?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </summary>
+          <p class="faq-a">
+            Me avisás por WhatsApp y lo vemos juntas. La primera semana
+            hago todos los ajustes sin costo adicional.
+          </p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            ¿Cuánto tarda en estar listo?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </summary>
+          <p class="faq-a">
+            Una semana desde que empezamos. En ese plazo está diseñada,
+            probada y en uso real con tus clientas.
+          </p>
+        </details>
+
+      </div>
+    </section>
+
+  </div><!-- /wrap -->
+
+
+  <!-- ==========================================================
+       SECCIÓN 7 — BOTÓN DE CIERRE (borde a borde dentro del wrap)
+       ========================================================== -->
+  <div class="wrap">
+    <div class="cta-bloque" id="reunion">
+      <span class="eyebrow" style="color: rgba(237,232,224,.45);">Sin compromiso</span>
+      <h2>Veamos si esto es para tu negocio</h2>
+      <p class="sub-cta">
+        Reunión de 20 minutos. Te muestro cómo funciona y charlamos.
+        Si no te convence, no pasa nada — al menos sabés qué opciones existen.
+      </p>
+      <div>
+        <!-- El link se agrega cuando se confirma la plataforma de agenda -->
+        <a href="#" class="btn btn-primary">Agendá una reunión de 20 minutos</a>
+      </div>
+      <p class="disclaimer">
+        O si preferís,
+        <a href="#">escribime por WhatsApp</a>.
+        Respondo el mismo día.
+      </p>
     </div>
+  </div>
 
-    <div id="result">
-      <p class="empty-state">Escribí un nombre arriba para ver su ficha.</p>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <p style="max-width: none; color: var(--muted);">
+        © 2026 Cinthia Calle · Fichas digitales para centros de estética
+      </p>
     </div>
-  </section>
+  </footer>
 
-  <div class="beat after">
-    <p><strong>Después:</strong> buscás el nombre y en dos segundos tenés el historial completo y el próximo turno, listos para atender.</p>
-  </div>
 
-  <div class="cta-block">
-    <!-- Reemplazá el href de abajo por tu enlace real de agenda (Calendly, WhatsApp, etc.) -->
-    <a class="cta" href="#" onclick="return false;">¿Lo ves claro? Agendá 20 minutos y te armo la versión para tu negocio</a>
-  </div>
+  <!-- ============================================================
+       JS — Animaciones de entrada suaves con IntersectionObserver
+       El hero se marca visible de inmediato (ya está en pantalla).
+       ============================================================ -->
+  <script>
+    (function () {
+      // El hero no necesita animación de entrada — ya se ve al cargar
+      const hero = document.querySelector('.hero');
+      if (hero) hero.classList.add('visible');
 
-</div>
+      // Las demás secciones se animan al entrar en el viewport
+      const obs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('visible');
+              obs.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.08 }
+      );
 
-<script>
-  var clientes = [
-    {
-      nombre: "María Elena Fassi",
-      desde: "paciente desde 2021",
-      proximoTurno: "Martes 9 de septiembre, 15:30 — Sesión de radiofrecuencia facial",
-      historial: [
-        { fecha: "18 ago 2026", detalle: "Limpieza facial profunda + hidratación" },
-        { fecha: "20 jun 2026", detalle: "Peeling químico suave, zona T" },
-        { fecha: "02 abr 2026", detalle: "Consulta inicial y diagnóstico de piel" }
-      ],
-      nota: "Piel sensible: evitar ácidos fuertes en verano."
-    },
-    {
-      nombre: "Rocío Andrada",
-      desde: "paciente desde 2023",
-      proximoTurno: "Jueves 11 de septiembre, 10:00 — Control post depilación láser",
-      historial: [
-        { fecha: "25 ago 2026", detalle: "Depilación láser, piernas completas — sesión 5 de 8" },
-        { fecha: "28 jul 2026", detalle: "Depilación láser, piernas completas — sesión 4 de 8" },
-        { fecha: "30 jun 2026", detalle: "Depilación láser, piernas completas — sesión 3 de 8" }
-      ],
-      nota: ""
-    },
-    {
-      nombre: "Sofía Benegas",
-      desde: "paciente desde 2022",
-      proximoTurno: "Miércoles 10 de septiembre, 17:00 — Aplicación de ácido hialurónico, labios",
-      historial: [
-        { fecha: "12 ago 2026", detalle: "Botox entrecejo" },
-        { fecha: "03 may 2026", detalle: "Ácido hialurónico, ojeras" },
-        { fecha: "14 feb 2026", detalle: "Microdermoabrasión" }
-      ],
-      nota: "Prefiere turnos después de las 16 h."
-    },
-    {
-      nombre: "Gustavo Perren",
-      desde: "paciente desde 2024",
-      proximoTurno: "Sin turno agendado",
-      historial: [
-        { fecha: "05 ago 2026", detalle: "Sesión de dermapen, cicatrices de acné" },
-        { fecha: "10 jun 2026", detalle: "Consulta inicial y diagnóstico de piel" }
-      ],
-      nota: ""
-    },
-    {
-      nombre: "Antonella Rearte",
-      desde: "paciente desde 2020",
-      proximoTurno: "Viernes 12 de septiembre, 11:15 — Peeling químico profundo",
-      historial: [
-        { fecha: "22 jul 2026", detalle: "Peeling químico profundo" },
-        { fecha: "15 abr 2026", detalle: "Radiofrecuencia facial" },
-        { fecha: "20 ene 2026", detalle: "Limpieza facial profunda" }
-      ],
-      nota: "Alérgica al ácido salicílico."
-    }
-  ];
-
-  var input = document.getElementById("search");
-  var suggestionsEl = document.getElementById("suggestions");
-  var resultEl = document.getElementById("result");
-
-  function renderSuggestions(){
-    suggestionsEl.innerHTML = "";
-    clientes.forEach(function(c){
-      var chip = document.createElement("button");
-      chip.type = "button";
-      chip.className = "chip";
-      chip.textContent = c.nombre;
-      chip.addEventListener("click", function(){
-        input.value = c.nombre;
-        renderResult(c.nombre);
-      });
-      suggestionsEl.appendChild(chip);
-    });
-  }
-
-  function renderResult(query){
-    var q = query.trim().toLowerCase();
-
-    if(q === ""){
-      resultEl.innerHTML = '<p class="empty-state">Escribí un nombre arriba para ver su ficha.</p>';
-      return;
-    }
-
-    var encontrado = clientes.find(function(c){
-      return c.nombre.toLowerCase().indexOf(q) !== -1;
-    });
-
-    if(!encontrado){
-      resultEl.innerHTML = '<p class="empty-state">No hay ninguna paciente con ese nombre en esta demo. Probá con una de las sugerencias.</p>';
-      return;
-    }
-
-    var historialHTML = encontrado.historial.map(function(h){
-      return '<li><span class="date">' + h.fecha + '</span><span>' + h.detalle + '</span></li>';
-    }).join("");
-
-    var notaHTML = encontrado.nota ? '<p class="note">Nota: ' + encontrado.nota + '</p>' : '';
-
-    resultEl.innerHTML =
-      '<div class="card-anim">' +
-        '<div class="client-head">' +
-          '<span class="name">' + encontrado.nombre + '</span>' +
-          '<span class="since">' + encontrado.desde + '</span>' +
-        '</div>' +
-        '<div class="next-appt">' +
-          '<span class="label">Próximo turno</span>' +
-          encontrado.proximoTurno +
-        '</div>' +
-        '<h3 class="history-title">Historial de tratamientos</h3>' +
-        '<ul class="history">' + historialHTML + '</ul>' +
-        notaHTML +
-      '</div>';
-  }
-
-  input.addEventListener("input", function(){
-    renderResult(input.value);
-  });
-
-  renderSuggestions();
-</script>
+      document.querySelectorAll('.fade-in').forEach((el) => obs.observe(el));
+    })();
+  </script>
 
 </body>
 </html>
