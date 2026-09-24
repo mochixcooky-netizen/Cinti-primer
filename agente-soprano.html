@@ -157,53 +157,6 @@
     opacity: .6;
     cursor: not-allowed;
   }
-
-  /* --------------------------------------------------------
-     PANEL PARA CARGAR LA API KEY (solo la primera vez)
-     -------------------------------------------------------- */
-  .config-api {
-    padding: 1rem 1.25rem;
-    background: var(--burbuja-ia);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-  }
-
-  .config-api p {
-    margin: 0;
-    font-size: .85rem;
-    color: var(--muted);
-  }
-
-  .config-api .fila {
-    display: flex;
-    gap: .5rem;
-  }
-
-  #campo-api-key {
-    flex: 1;
-    padding: .6rem .8rem;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-size: .88rem;
-    font-family: inherit;
-  }
-
-  #btn-guardar-key {
-    padding: .6rem 1rem;
-    border: none;
-    border-radius: 10px;
-    background: var(--acento);
-    color: #fff;
-    font-weight: 600;
-    font-size: .85rem;
-    cursor: pointer;
-  }
-
-  .config-api.oculto {
-    display: none;
-  }
 </style>
 </head>
 <body>
@@ -217,18 +170,6 @@
       <h1>Asistente Soprano</h1>
       <p>Tu ayuda virtual para encontrar el talle justo</p>
     </header>
-
-    <!-- ==========================================================
-         PANEL PARA CARGAR LA API KEY — se muestra solo si todavía
-         no hay una key guardada en este navegador
-         ========================================================== -->
-    <div class="config-api" id="config-api">
-      <p>Pegá tu API key de Gemini para activar el asistente. Se guarda solo en este navegador, nunca se sube a ningún servidor.</p>
-      <div class="fila">
-        <input type="password" id="campo-api-key" placeholder="API key de Gemini" autocomplete="off" />
-        <button id="btn-guardar-key">Guardar</button>
-      </div>
-    </div>
 
     <!-- ==========================================================
          2) CAJA DE CONVERSACIÓN — vacía hasta que haya mensajes
@@ -257,11 +198,14 @@
        CONFIGURACIÓN
        ============================================================ */
 
+    // Pegá acá tu API key de Gemini (la conseguís en https://aistudio.google.com/apikey)
+    const GEMINI_API_KEY = "PEGA_ACA_TU_API_KEY";
+
     // Modelo de Gemini a usar
     const GEMINI_MODEL = "gemini-2.5-flash";
 
-    // Nombre bajo el cual se guarda la key en este navegador
-    const CLAVE_STORAGE = "soprano_gemini_api_key";
+    const GEMINI_URL =
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
     /* ============================================================
        REFERENCIAS AL DOM
@@ -269,45 +213,6 @@
     const cajaConversacion = document.getElementById("caja-conversacion");
     const campoMensaje = document.getElementById("campo-mensaje");
     const btnEnviar = document.getElementById("btn-enviar");
-    const configApi = document.getElementById("config-api");
-    const campoApiKey = document.getElementById("campo-api-key");
-    const btnGuardarKey = document.getElementById("btn-guardar-key");
-
-    /* ============================================================
-       La API key nunca vive en el código: se pide una sola vez y
-       se guarda en el localStorage del navegador del usuario.
-       ============================================================ */
-    function obtenerApiKey() {
-      try {
-        return localStorage.getItem(CLAVE_STORAGE) || "";
-      } catch {
-        return "";
-      }
-    }
-
-    function guardarApiKey(key) {
-      try {
-        localStorage.setItem(CLAVE_STORAGE, key);
-      } catch {
-        // Si el navegador bloquea localStorage, seguimos igual;
-        // habrá que pegar la key de nuevo en la próxima carga.
-      }
-    }
-
-    function actualizarPanelConfig() {
-      configApi.classList.toggle("oculto", Boolean(obtenerApiKey()));
-    }
-
-    btnGuardarKey.addEventListener("click", () => {
-      const key = campoApiKey.value.trim();
-      if (!key) return;
-      guardarApiKey(key);
-      campoApiKey.value = "";
-      actualizarPanelConfig();
-      campoMensaje.focus();
-    });
-
-    actualizarPanelConfig();
 
     /* ============================================================
        Agrega una burbuja de mensaje a la caja de conversación
@@ -331,13 +236,6 @@
       const texto = campoMensaje.value.trim();
       if (!texto) return;
 
-      const apiKey = obtenerApiKey();
-      if (!apiKey) {
-        actualizarPanelConfig();
-        agregarMensaje("Primero pegá tu API key de Gemini arriba.", "error");
-        return;
-      }
-
       // Mostramos el mensaje del usuario
       agregarMensaje(texto, "user");
       campoMensaje.value = "";
@@ -346,11 +244,8 @@
       btnEnviar.disabled = true;
       const burbujaEspera = agregarMensaje("Escribiendo...", "ia");
 
-      const url =
-        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
-
       try {
-        const respuesta = await fetch(url, {
+        const respuesta = await fetch(GEMINI_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
