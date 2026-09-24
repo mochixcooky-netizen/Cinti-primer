@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Asistente Soprano</title>
+
+<style>
+  /* ==========================================================
+     Paleta simple y tipografía del sistema — sin dependencias
+     externas para que el archivo funcione con doble clic.
+     ========================================================== */
+  :root {
+    --bg: #f7f4f1;
+    --panel: #ffffff;
+    --ink: #2b2420;
+    --muted: #8a7f76;
+    --border: #e4ddd6;
+    --acento: #a9505f;   /* rosa viejo, tono "Soprano" */
+    --acento-h: #8f3f4d;
+    --burbuja-user: #a9505f;
+    --burbuja-ia: #f0ebe7;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  /* Contenedor principal del chat */
+  .chat {
+    width: 100%;
+    max-width: 480px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 640px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  /* --------------------------------------------------------
+     1) ENCABEZADO
+     -------------------------------------------------------- */
+  .chat-header {
+    background: var(--acento);
+    color: #fff;
+    padding: 1rem 1.25rem;
+  }
+
+  .chat-header h1 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+
+  .chat-header p {
+    margin: .2rem 0 0;
+    font-size: .8rem;
+    opacity: .85;
+  }
+
+  /* --------------------------------------------------------
+     2) CAJA DE CONVERSACIÓN
+     -------------------------------------------------------- */
+  .chat-body {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+  }
+
+  .msg {
+    max-width: 80%;
+    padding: .6rem .9rem;
+    border-radius: 14px;
+    font-size: .92rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+  }
+
+  .msg.user {
+    align-self: flex-end;
+    background: var(--burbuja-user);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg.ia {
+    align-self: flex-start;
+    background: var(--burbuja-ia);
+    color: var(--ink);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg.error {
+    align-self: flex-start;
+    background: #fbeaea;
+    color: #a33;
+    border: 1px solid #f0c9c9;
+  }
+
+  /* --------------------------------------------------------
+     3) INPUT + BOTÓN ENVIAR
+     -------------------------------------------------------- */
+  .chat-footer {
+    display: flex;
+    gap: .5rem;
+    padding: .75rem;
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+  }
+
+  #campo-mensaje {
+    flex: 1;
+    padding: .65rem .9rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: .92rem;
+    font-family: inherit;
+    outline: none;
+  }
+
+  #campo-mensaje:focus {
+    border-color: var(--acento);
+  }
+
+  #btn-enviar {
+    padding: .65rem 1.1rem;
+    border: none;
+    border-radius: 10px;
+    background: var(--acento);
+    color: #fff;
+    font-weight: 600;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: background .15s;
+  }
+
+  #btn-enviar:hover {
+    background: var(--acento-h);
+  }
+
+  #btn-enviar:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+</style>
+</head>
+<body>
+
+  <div class="chat">
+
+    <!-- ==========================================================
+         1) ENCABEZADO — nombre del agente
+         ========================================================== -->
+    <header class="chat-header">
+      <h1>Asistente Soprano</h1>
+      <p>Tu ayuda virtual para encontrar el talle justo</p>
+    </header>
+
+    <!-- ==========================================================
+         2) CAJA DE CONVERSACIÓN — vacía hasta que haya mensajes
+         ========================================================== -->
+    <main class="chat-body" id="caja-conversacion">
+      <!-- Acá se van agregando los mensajes con JS -->
+    </main>
+
+    <!-- ==========================================================
+         3) INPUT + BOTÓN ENVIAR
+         ========================================================== -->
+    <footer class="chat-footer">
+      <input
+        type="text"
+        id="campo-mensaje"
+        placeholder="Escribí tu mensaje..."
+        autocomplete="off"
+      />
+      <button id="btn-enviar">Enviar</button>
+    </footer>
+
+  </div>
+
+  <script>
+    /* ============================================================
+       CONFIGURACIÓN
+       ============================================================ */
+
+    // Pegá acá tu API key de Gemini (la conseguís en https://aistudio.google.com/apikey)
+    const GEMINI_API_KEY = "PEGA_ACA_TU_API_KEY";
+
+    // Modelo de Gemini a usar
+    const GEMINI_MODEL = "gemini-2.5-flash";
+
+    const GEMINI_URL =
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+
+    /* ============================================================
+       REFERENCIAS AL DOM
+       ============================================================ */
+    const cajaConversacion = document.getElementById("caja-conversacion");
+    const campoMensaje = document.getElementById("campo-mensaje");
+    const btnEnviar = document.getElementById("btn-enviar");
+
+    /* ============================================================
+       Agrega una burbuja de mensaje a la caja de conversación
+       tipo: "user" | "ia" | "error"
+       ============================================================ */
+    function agregarMensaje(texto, tipo) {
+      const burbuja = document.createElement("div");
+      burbuja.className = `msg ${tipo}`;
+      burbuja.textContent = texto;
+      cajaConversacion.appendChild(burbuja);
+      // Siempre mostramos el último mensaje
+      cajaConversacion.scrollTop = cajaConversacion.scrollHeight;
+      return burbuja;
+    }
+
+    /* ============================================================
+       Envía el mensaje del usuario a la API de Gemini
+       y muestra la respuesta en la caja de conversación
+       ============================================================ */
+    async function enviarMensaje() {
+      const texto = campoMensaje.value.trim();
+      if (!texto) return;
+
+      // Mostramos el mensaje del usuario
+      agregarMensaje(texto, "user");
+      campoMensaje.value = "";
+
+      // Bloqueamos el botón mientras esperamos la respuesta
+      btnEnviar.disabled = true;
+      const burbujaEspera = agregarMensaje("Escribiendo...", "ia");
+
+      try {
+        const respuesta = await fetch(GEMINI_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: texto }],
+              },
+            ],
+          }),
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+          throw new Error(datos.error?.message || "Error al contactar la IA.");
+        }
+
+        const textoRespuesta =
+          datos.candidates?.[0]?.content?.parts?.[0]?.text ||
+          "No obtuve respuesta de la IA.";
+
+        burbujaEspera.textContent = textoRespuesta;
+      } catch (error) {
+        burbujaEspera.remove();
+        agregarMensaje(`Error: ${error.message}`, "error");
+      } finally {
+        btnEnviar.disabled = false;
+        campoMensaje.focus();
+      }
+    }
+
+    /* ============================================================
+       Eventos: click en el botón o Enter en el campo de texto
+       ============================================================ */
+    btnEnviar.addEventListener("click", enviarMensaje);
+    campoMensaje.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") enviarMensaje();
+    });
+  </script>
+
+</body>
+</html>
